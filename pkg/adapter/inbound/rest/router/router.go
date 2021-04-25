@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func NewHandler(controller func(w http.ResponseWriter, r *http.Request, _ map[string]string)) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func newHandler(controller func(w http.ResponseWriter, r *http.Request, _ map[string]string)) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		dict := make(map[string]string)
 		for _, p := range params {
@@ -21,6 +21,6 @@ func NewHandler(controller func(w http.ResponseWriter, r *http.Request, _ map[st
 func NewRouter(db *sql.DB) http.Handler {
 	router := httprouter.New()
 	blog := controller.NewBlog(outbound.NewBlogRepository(db))
-	router.POST("/blogs", NewHandler(blog.Create))
+	router.POST("/blogs", newHandler(blog.Create))
 	return router
 }

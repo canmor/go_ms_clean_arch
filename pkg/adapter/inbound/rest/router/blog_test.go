@@ -3,7 +3,7 @@ package router
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/canmor/go_ms_clean_arch/pkg/infra/db"
+	db2 "github.com/canmor/go_ms_clean_arch/pkg/adapter/outbound/db"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
@@ -13,11 +13,11 @@ import (
 )
 
 func prepareDB() *sql.DB {
-	res, err := db.NewInMemory()
+	res, err := db2.NewInMemory()
 	if err != nil {
 		log.Panicf("db error: %s", err)
 	}
-	err = db.Migrate(res)
+	err = db2.Migrate(res)
 	if err != nil {
 		log.Panicf("db error: %s", err)
 	}

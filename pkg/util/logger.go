@@ -1,6 +1,9 @@
-package domain
+package util
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 type LogLevel int
 
@@ -58,4 +61,11 @@ func (l LoggerWrapper) Fatal(args ...interface{}) {
 
 func (l LoggerWrapper) Fatalf(format string, args ...interface{}) {
 	l.logger.Log(LogFatal, fmt.Sprintf(format, args...))
+}
+
+type LoggerImpl struct {
+}
+
+func (l LoggerImpl) Log(_ LogLevel, content string) {
+	log.Printf(content)
 }
