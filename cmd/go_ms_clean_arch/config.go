@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	ListenPort int16
+	ListenPort uint16
 }
 
 func New() *Config {
@@ -15,7 +15,7 @@ func New() *Config {
 	if ok {
 		port, err := strconv.Atoi(listenPort)
 		if err != nil {
-			result.ListenPort = int16(port)
+			result.ListenPort = uint16(port)
 		}
 	}
 	return &result

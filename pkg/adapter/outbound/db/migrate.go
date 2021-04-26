@@ -2,7 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"log"
+	"github.com/canmor/go_ms_clean_arch/pkg/util"
 )
 
 func Migrate(db *sql.DB) error {
@@ -12,7 +12,7 @@ func Migrate(db *sql.DB) error {
 	`
 	_, err := db.Exec(sqlStmt)
 	if err != nil {
-		log.Printf("%q: %s\n", err, sqlStmt)
+		util.Log().Errorf("%q: %s\n", err, sqlStmt)
 	}
 	return err
 }

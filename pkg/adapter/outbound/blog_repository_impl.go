@@ -3,8 +3,9 @@ package outbound
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/canmor/go_ms_clean_arch/pkg/domain/blog"
-	"log"
+	"github.com/canmor/go_ms_clean_arch/pkg/util"
 )
 
 type BlogRepositoryImpl struct {
@@ -16,26 +17,11 @@ func NewBlogRepository(db *sql.DB) blog.BlogRepository {
 }
 
 func (b BlogRepositoryImpl) Save(blog blog.Blog) (int64, error) {
-	tx, err := b.db.Begin()
+	res, err := b.db.Exec("insert into blogs(title, body, created_at) values(?, ?, ?)", blog.Title, blog.Body, blog.CreatedAt)
 	if err != nil {
-		log.Print(err)
-	}
-	stmt, err := tx.Prepare("insert into blogs(title, body, created_at) values(?, ?, ?)")
-	if err != nil {
-		log.Print(err)
-	}
-	defer func() {
-		_ = stmt.Close()
-	}()
-
-	res, err := stmt.Exec(blog.Title, blog.Body, blog.CreatedAt)
-	if err != nil {
-		log.Print(err)
-		return 0, err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return 0, err
+		err = fmt.Errorf("BlogRepositoryImpl.Save failed, err: %s", err)
+		util.Log().Error(err)
+		return -1, err
 	}
 	id, err := res.LastInsertId()
 	return id, err

@@ -3,7 +3,7 @@ package router
 import (
 	"database/sql"
 	"encoding/json"
-	db2 "github.com/canmor/go_ms_clean_arch/pkg/adapter/outbound/db"
+	"github.com/canmor/go_ms_clean_arch/pkg/adapter/outbound/db"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
@@ -13,11 +13,11 @@ import (
 )
 
 func prepareDB() *sql.DB {
-	res, err := db2.NewInMemory()
+	res, err := db.NewInMemory()
 	if err != nil {
 		log.Panicf("db error: %s", err)
 	}
-	err = db2.Migrate(res)
+	err = db.Migrate(res)
 	if err != nil {
 		log.Panicf("db error: %s", err)
 	}
@@ -28,6 +28,7 @@ func TestBlogCreate(t *testing.T) {
 	router := NewRouter(prepareDB())
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/blogs", strings.NewReader(`{"title":"test", "body":"body"}`))
+
 	router.ServeHTTP(w, req)
 
 	assertions := assert.New(t)

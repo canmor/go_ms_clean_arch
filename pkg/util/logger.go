@@ -69,3 +69,7 @@ type LoggerImpl struct {
 func (l LoggerImpl) Log(_ LogLevel, content string) {
 	log.Printf(content)
 }
+
+func Log() LoggerWrapper {
+	return LoggerWrapper{LoggerImpl{}}
+}

@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/canmor/go_ms_clean_arch/pkg/adapter/inbound/rest/router"
 	"github.com/canmor/go_ms_clean_arch/pkg/adapter/outbound/db"
 	"net/http"
+	"strconv"
 )
 
 type Web struct {
@@ -24,5 +24,5 @@ func NewWeb() (*Web, error) {
 }
 
 func (w *Web) Run() error {
-	return http.ListenAndServe(fmt.Sprintf(":%d", w.config.ListenPort), w.router)
+	return http.ListenAndServe(strconv.Itoa(int(w.config.ListenPort)), w.router)
 }
