@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"github.com/canmor/go_ms_clean_arch/pkg/app/usecase"
 	"github.com/canmor/go_ms_clean_arch/pkg/domain/blog"
+	"github.com/gorilla/mux"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 type Blog struct {
-	repo blog.BlogRepository
+	repo     blog.BlogRepository
+	shortURL usecase.ShortURL
 }
 
 type BlogParam struct {
@@ -23,8 +26,8 @@ type BlogResponse struct {
 	Body  string `json:"body"`
 }
 
-func NewBlog(repo blog.BlogRepository) Blog {
-	return Blog{repo}
+func NewBlog(repo blog.BlogRepository, shortURL usecase.ShortURL) Blog {
+	return Blog{repo, shortURL}
 }
 
 func newResponse(blog *blog.Blog) BlogResponse {
@@ -45,7 +48,7 @@ func (b Blog) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := usecase.NewBlogUseCase(b.repo)
+	u := usecase.NewBlogUseCase(b.repo, b.shortURL)
 	created := u.Create(bodyParam.Title, bodyParam.Body)
 	if created == nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -60,4 +63,36 @@ func (b Blog) Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+type shareResponse struct {
+	Shortcut string `json:"shortcut"`
+}
+
+func (b Blog) Share(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	found, err := b.repo.Find(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if found == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	use := usecase.NewBlogUseCase(b.repo, b.shortURL)
+	shortURL, err := use.Share(*found)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	out, _ := json.Marshal(shareResponse{shortURL})
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(out)
 }

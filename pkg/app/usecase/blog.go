@@ -6,11 +6,12 @@ import (
 )
 
 type BlogUseCase struct {
-	repo blog.BlogRepository
+	repo            blog.BlogRepository
+	shortURLService ShortURL
 }
 
-func NewBlogUseCase(repo blog.BlogRepository) *BlogUseCase {
-	return &BlogUseCase{repo}
+func NewBlogUseCase(repo blog.BlogRepository, shortURLService ShortURL) *BlogUseCase {
+	return &BlogUseCase{repo, shortURLService}
 }
 
 func (b BlogUseCase) Create(title string, body string) *blog.Blog {
@@ -21,4 +22,8 @@ func (b BlogUseCase) Create(title string, body string) *blog.Blog {
 	}
 	res.Id = id
 	return &res
+}
+
+func (b BlogUseCase) Share(blog blog.Blog) (string, error) {
+	return b.shortURLService.Create(blog.URL())
 }

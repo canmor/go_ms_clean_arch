@@ -2,7 +2,6 @@ package outbound
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/canmor/go_ms_clean_arch/pkg/domain/blog"
 	"github.com/canmor/go_ms_clean_arch/pkg/util"
@@ -27,6 +26,16 @@ func (b BlogRepositoryImpl) Save(blog blog.Blog) (int64, error) {
 	return id, err
 }
 
-func (b BlogRepositoryImpl) Find(_ int) (*blog.Blog, error) {
-	return nil, errors.New("unimplemented")
+func (b BlogRepositoryImpl) Find(id int) (*blog.Blog, error) {
+	// FIXME: add created_at
+	r := b.db.QueryRow("select id, title, body FROM blogs WHERE id=?", id)
+	found := blog.Blog{}
+	err := r.Scan(&found.Id, &found.Title, &found.Body)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &found, nil
 }
