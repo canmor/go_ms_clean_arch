@@ -32,7 +32,7 @@ func newResponse(blog *blog.Blog) BlogResponse {
 	return resp
 }
 
-func (b Blog) Create(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func (b Blog) Create(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
