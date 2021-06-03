@@ -7,7 +7,7 @@ import (
 )
 
 func NewInMemory() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", ":memory")
+	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		util.Log().Error(err)
 	}
